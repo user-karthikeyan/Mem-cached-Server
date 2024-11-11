@@ -51,12 +51,16 @@ func handle_connection(Connection net.Conn) {
 	reader := bufio.NewReader(Connection)
 	writer := bufio.NewWriter(Connection)
 
-	readFromClient := func() (string, error) {
-		return readLine(reader)
+	readFromClient := func(bytes int) (string, error) {
+		if bytes == 0 {
+			return readLine(reader)
+		} else {
+			return readBytes(reader, bytes)
+		}
 	}
 
 	for {
-		command, err = readFromClient()
+		command, err = readFromClient(0)
 
 		if err != nil {
 			fmt.Println("Error:", err)
@@ -66,6 +70,16 @@ func handle_connection(Connection net.Conn) {
 			writer.WriteString(result)
 			writer.Flush()
 		}
+	}
+}
+
+func readBytes(reader *bufio.Reader, bytes int) (string, error) {
+	line, err := readLine(reader)
+
+	if len(line) > bytes {
+		return "", fmt.Errorf("size of payload is greater that specified %d got %d", bytes, len(line))
+	} else {
+		return line, err
 	}
 }
 
