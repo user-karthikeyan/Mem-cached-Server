@@ -45,29 +45,32 @@ func handle_connection(Connection net.Conn) {
 
 	var (
 		command string
-		block   string
-		error   error
+		err     error
 	)
 
 	reader := bufio.NewReader(Connection)
 	writer := bufio.NewWriter(Connection)
 
+	readFromClient := func() (string, error) {
+		return readLine(reader)
+	}
+
 	for {
-		command, error = reader.ReadString('\n')
-		command = strings.TrimRight(command, "\r\n") + " $"
+		command, err = readFromClient()
 
-		if !strings.HasPrefix(command, "get") {
-			block, error = reader.ReadString('\n')
-			block = strings.TrimRight(block, "\r\n")
-		}
-
-		if error != nil {
-			fmt.Println("Error:", error)
+		if err != nil {
+			fmt.Println("Error:", err)
 			return
 		} else {
-			result := commands.ParseCommand(command, block)
+			result := commands.ParseCommand(command, readFromClient)
 			writer.WriteString(result)
 			writer.Flush()
 		}
 	}
+}
+
+func readLine(reader *bufio.Reader) (string, error) {
+	line, err := reader.ReadString('\n')
+	line = strings.TrimRight(line, "\r\n") + " $"
+	return line, err
 }

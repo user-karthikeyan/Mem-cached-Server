@@ -5,23 +5,27 @@ import (
 	"strings"
 )
 
-func ParseCommand(command string, data_block string) string {
+func ParseCommand(command string, readFromClient func() (string, error)) string {
 
 	var (
 		block  Datablock
 		parsed int
 		result string
 		key    string
+		err    error
 	)
 
-	block.Data_block = data_block
 	name, args, _ := strings.Cut(command, " ")
 
 	switch name {
 	case "set":
 		parsed, _ = fmt.Sscanf(args, "%s %d %d %d $", &block.Key, &block.Flags, &block.Expiry, &block.Byte_count)
+		block.Data_block, err = readFromClient()
 
-		if parsed == 4 {
+		if err != nil {
+			result = fmt.Sprintf("Error: %v", err)
+			break
+		} else if parsed == 4 {
 			result = putBlock(block)
 		} else {
 			result = "Invalid arguments\r\n"
@@ -37,8 +41,12 @@ func ParseCommand(command string, data_block string) string {
 
 	case "append":
 		parsed, _ = fmt.Sscanf(args, "%s %d %d %d $", &block.Key, &block.Flags, &block.Expiry, &block.Byte_count)
+		block.Data_block, err = readFromClient()
 
-		if parsed == 4 {
+		if err != nil {
+			result = fmt.Sprintf("Error: %v", err)
+			break
+		} else if parsed == 4 {
 			result = appendBlock(block.Key, block)
 		} else {
 			result = "Invalid arguments\r\n"
@@ -46,8 +54,12 @@ func ParseCommand(command string, data_block string) string {
 
 	case "prepend":
 		parsed, _ = fmt.Sscanf(args, "%s %d %d %d $", &block.Key, &block.Flags, &block.Expiry, &block.Byte_count)
+		block.Data_block, err = readFromClient()
 
-		if parsed == 4 {
+		if err != nil {
+			result = fmt.Sprintf("Error: %v", err)
+			break
+		} else if parsed == 4 {
 			result = prependBlock(block.Key, block)
 		} else {
 			result = "Invalid arguments\r\n"
