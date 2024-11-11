@@ -1,0 +1,3 @@
+module MEM-CACHED-SERVER
+
+go 1.23.2
