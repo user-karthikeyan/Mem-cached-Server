@@ -74,7 +74,8 @@ func handle_connection(Connection net.Conn) {
 }
 
 func readBytes(reader *bufio.Reader, bytes int) (string, error) {
-	line, err := readLine(reader)
+	line, err := reader.ReadString('\n')
+	line = strings.TrimRight(line, "\r\n")
 
 	if len(line) > bytes {
 		return "", fmt.Errorf("size of payload is greater that specified %d got %d", bytes, len(line))
