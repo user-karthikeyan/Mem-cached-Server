@@ -11,6 +11,7 @@ Memcached a in-memory key-value store used to reduce latency in back-end systems
 5. [Supported Commands](#supported-commands)
 6. [Architecture and Design](#architecture-and-design)
 7. [Examples](#examples)
+8. [Performance](#performance)
 
 ### Introduction
 This project is a custom Memcached server implemented in Go, replicating essential caching functionalities for fast, reliable data storage and retrieval. Designed with simplicity and concurrency control in mind, it supports core Memcached commands along with several advanced operations.
@@ -82,4 +83,6 @@ The server is structured with modular, concurrent components:
    cas key1 0 900 5 12345
    new_value
    ```
+### Performance
+   ![performance](https://github.com/user-karthikeyan/Mem-cached-Server/blob/main/Results/Results.png)
 
