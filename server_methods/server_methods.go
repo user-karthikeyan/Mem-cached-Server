@@ -31,7 +31,6 @@ func service_client(Listener net.Listener) {
 		Connection, Error := Listener.Accept()
 
 		if Error != nil {
-			fmt.Println("Error:", Error)
 			continue
 		} else {
 			go handle_connection(Connection)
@@ -63,7 +62,6 @@ func handle_connection(Connection net.Conn) {
 		command, err = readFromClient(0)
 
 		if err != nil {
-			fmt.Println("Error:", err)
 			return
 		} else {
 			result := commands.ParseCommand(command, readFromClient)
